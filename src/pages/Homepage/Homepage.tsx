@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Table} from "antd";
+import { Table } from "antd";
+import React, { FC, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchStoryData } from '../../services/services';
 import './homepage.css';
-import { useNavigate } from 'react-router-dom';
 
-const Homepage = () =>{
+const Homepage : React.FunctionComponent = () =>{
     const [story, setStory] = useState<any>([]);
     const [flag, setFlag] = useState<boolean>(true);
     const navigate = useNavigate();

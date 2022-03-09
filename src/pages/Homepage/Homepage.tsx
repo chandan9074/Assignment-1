@@ -1,9 +1,24 @@
-import { Table } from "antd";
-import React, { FC, useEffect, useState } from 'react';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchStoryData } from '../../services/services';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid'
 import './homepage.css';
+
+export const columns: GridColDef[] = [
+        {
+            field: 'objectID',
+            hide: true,
+            // identity: true
+        },
+        { field: 'title', headerName: 'Title', width: 600 },
+        { field: 'author', headerName: 'Author', width: 200 },
+        { field: 'created_at', headerName: 'Created At', width: 250 },
+        {
+            field: 'url',
+            headerName: 'URL',
+            width: 350
+        }
+    ];
 
 const Homepage : React.FunctionComponent = () =>{
     const [story, setStory] = useState<any>([]);
@@ -25,36 +40,26 @@ const Homepage : React.FunctionComponent = () =>{
         const response = await fetchStoryData(pageNo);
         setStory((prevState:any) => [...prevState, ...response.hits]);
         pageNo = pageNo + 1;
-        setLoading(false)
+        if(loading){
+            setLoading(false)
+        }
     }
 
     const handleDataShow = (data : any) =>{
         navigate("/singledata", {state:{data:data}})
     }
 
-    const columns: GridColDef[] = [
-        {
-            field: 'objectID',
-            hide: true,
-            // identity: true
-        },
-        { field: 'title', headerName: 'Title', width: 600 },
-        { field: 'author', headerName: 'Author', width: 200 },
-        { field: 'created_at', headerName: 'Created At', width: 250 },
-        {
-            field: 'url',
-            headerName: 'URL',
-            width: 350
-        }
-    ];
+    
 
     return (
         <div style={{ height: "100vh", width: '100%' }}>
             <DataGrid
+                data-testId = "data-table"
                 rows={story}
                 columns={columns}
                 getRowId={(row :any) => row.objectID}
                 pageSize={12}
+                rowsPerPageOptions={[12]}
                 loading={loading}
                 onSelectionModelChange= {(data)=>{
                     const select = story.filter((storydt : any) => storydt.objectID ===data[0] );

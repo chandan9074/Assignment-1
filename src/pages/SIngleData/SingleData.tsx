@@ -6,7 +6,7 @@ const SingleData : React.FunctionComponent = () =>{
     const {state}:any = useLocation();
     const update = JSON.stringify(state.data);
     return (
-        <p className='singledt'>
+        <p className='singledt' data-testId="single-data">
             {update}
         </p>
     )

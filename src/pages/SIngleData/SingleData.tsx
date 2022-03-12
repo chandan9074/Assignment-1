@@ -3,11 +3,23 @@ import { useLocation } from 'react-router';
 import './singledata.css';
 
 const SingleData : React.FunctionComponent = () =>{
-    const {state}:any = useLocation();
-    const update = JSON.stringify(state.data);
+    type SingleDataT = {
+        data: {
+            title: string,
+            url: string,
+            created_at: Date,
+            author: string,
+            objectID: string
+        }
+    }
+
+    const location = useLocation();
+    const state = location.state as SingleDataT;
+    const { data } = state;
+    const rawData = JSON.stringify(data);
     return (
         <p className='singledt' data-testId="single-data">
-            {update}
+            {rawData}
         </p>
     )
 }

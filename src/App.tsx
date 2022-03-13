@@ -10,7 +10,7 @@ import SingleData from './pages/SIngleData/SingleData';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" data-testid="app">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Homepage />}></Route>

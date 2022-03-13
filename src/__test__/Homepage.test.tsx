@@ -1,26 +1,5 @@
-import * as React from 'react';
-
- import Homepage, { columns } from "../pages/Homepage/Homepage";
- import { fetchStoryData } from "../services/services";
- import * as ReactDom from "react-dom";
- import {
-     BrowserRouter
- } from "react-router-dom";
-
-
- let container : HTMLDivElement
-
- beforeEach(()=>{
-     container = document.createElement("div");
-     document.body.appendChild(container);
-     ReactDom.render(<BrowserRouter><Homepage /></BrowserRouter>, container);
- })
-
- afterEach(()=>{
-     document.body.removeChild(container);
-     container.remove();
- })
-
+import { columns } from "../pages/Homepage/Homepage";
+import { fetchStoryData } from "../services/services";
 
 
  it("Render data perfectly", ()=>{
@@ -46,8 +25,4 @@ import * as React from 'react';
 
      it("Check the table data structure", ()=>{
          expect(columnsData).toEqual(columns);
-     })
-
-     it("check the existance of data table", ()=>{
-         expect(container.querySelector("[data-testid='data-table']")).toBeInTheDocument;
      })

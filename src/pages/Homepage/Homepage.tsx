@@ -1,10 +1,21 @@
-import { DataGrid, GridColDef, GridRowIdGetter } from '@mui/x-data-grid';
-import React, { useEffect, useState } from 'react';
+import { Pagination } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import React, { useContext } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { useNavigate } from 'react-router-dom';
-import { fetchStoryData } from '../../services/services';
+import { StoryContext } from '../../App';
 import './homepage.css';
 
-export const columns : GridColDef[] = [
+
+
+export const columns = [
         {
             field: 'objectID',
             hide: true,
@@ -18,12 +29,6 @@ export const columns : GridColDef[] = [
             width: 350
         }
     ];
-
-const Homepage : React.FunctionComponent = () =>{
-    const [story, setStory] = useState<storyDataT[]>([]);
-    const [loading, setLoading] = useState<boolean>(true)
-    const navigate = useNavigate();
-
     type storyDataT = {
         title: string,
         url: string,
@@ -31,146 +36,55 @@ const Homepage : React.FunctionComponent = () =>{
         author: string,
         objectID: string
     }
+const Homepage = ({onHandlePageChange}:{onHandlePageChange:any}) =>{
+    const navigate = useNavigate();
+    const {singlePageStory, totalPage, defaultPage, loading} = useContext(StoryContext)
 
-    useEffect(() => {
-        if(story.length === 0){
-            localStorage.setItem("page", "0");
-            fetchData();
-        }
-        else{
-            setTimeout(async() => {
-                fetchData();
-            }, 10000);
-        }
-    }, [story]);
-
-    const fetchData = async () =>{
-        let pageno = Number(localStorage.getItem("page"));
-        const response = await fetchStoryData(pageno);
-        setStory( [...story, ...response.hits]);
-
-        localStorage.setItem("page", String(pageno + 1));
-
-        if(loading){
-            setLoading(false)
-        }
-    }
-
-    const handleDataShow = (data : storyDataT[]) =>{
+    const handleDataShow = (data : storyDataT) =>{
         navigate("/singledata", {state:{data:data}})
     }
 
     return (
         <div style={{ height: "100vh", width: '100%' }}>
-           {story?
-            <DataGrid
-                data-testId = "data-table"
-                rows={[...story]}
-                columns={columns}
-                getRowId={((row : storyDataT) => row.objectID) as GridRowIdGetter}
-                pageSize={12}
-                rowsPerPageOptions={[12]}
-                loading={loading}
-                onSelectionModelChange= {(data)=>{
-                    const select  = story.filter((storydt : storyDataT) => storydt.objectID ===data[0] );
-                    handleDataShow(select);
-                }}
-            />:null}
+            {loading? <Box sx={{ display: 'flex', justifyContent:"center", alignItems:"center" ,width: '100%',height: "30vh" }}>
+                <CircularProgress />
+            </Box>:
+           singlePageStory?
+            <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                <TableRow>
+                    <TableCell sx={{ width: 600 }} >title</TableCell>
+                    <TableCell sx={{ width: 200 }} align="center">Author</TableCell>
+                    <TableCell sx={{ width: 250 }} align="center">Created At</TableCell>
+                    <TableCell sx={{ width: 350 }} align="center">URL</TableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                {singlePageStory.map((row:storyDataT) => (
+                    <TableRow
+                    key={row.objectID}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    onClick={() => handleDataShow(row)}
+                    >
+                    <TableCell component="th" scope="row">
+                        {row.title}
+                    </TableCell>
+                    <TableCell align="center">{row.author}</TableCell>
+                    <TableCell align="center">{row.created_at}</TableCell>
+                    <TableCell align="center">{row.url}</TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+            </TableContainer>
+            :null}
+            <div style={{display:'flex', justifyContent:"center", padding:"20px 0px 20px 0px"}}>
+                <Pagination color="primary" defaultPage={defaultPage} count={totalPage} variant="outlined"  onChange={onHandlePageChange} />
+            </div>
         </div>
     )
 }
 
 export default Homepage;
 
-
-
-
-// https://hn.algolia.com/api/v1/search_by_date?tags=story&page=10
-
-
-
-
-
-
-
-
-
-        // <>
-        //     <h2>Post List</h2>
-        //     <Container style={{ maxWidth: "100%" }}>
-        //         <Paper>
-        //             <TableContainer sx={{ maxHeight: "100vh" }}>
-        //                 {
-        //                     loading ? <Box sx={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
-        //                         <CircularProgress />
-        //                     </Box> : <Table stickyHeader aria-label="sticky table">
-        //                         <TableHead>
-        //                             {console.log(story)}
-        //                             <TableRow>
-        //                                 {
-        //                                     columns.map(column =>
-        //                                         <TableCell
-        //                                             key={column.id}
-        //                                             align={column.align}
-        //                                             style={{ minWidth: column.minWidth }}
-        //                                         >
-        //                                             {column.label}
-        //                                         </TableCell>
-        //                                     )
-        //                                 }
-        //                                 <TableCell />
-        //                             </TableRow>
-        //                         </TableHead>
-
-        //                         <TableBody>
-        //                             {
-        //                                 story.map((row : storyDataT, index) => {
-        //                                     return (
-        //                                         <TableRow
-        //                                             key={index}
-        //                                             onClick={() => handleDataShow(row)}
-                                                    
-                                                    
-        //                                         >
-                                                    
-        //                                             {
-        //                                                 columns.map(column => {
-        //                                                     const value = row[column.id];
-        //                                                     return (
-        //                                                         <TableCell
-        //                                                             key={column.id}
-        //                                                         >
-        //                                                             {value}
-        //                                                         </TableCell>
-        //                                                     )
-        //                                                 })
-        //                                             }
-        //                                             {/* <TableCell>
-        //                                                 <Button
-        //                                                     size="small"
-        //                                                     variant="contained"
-                                                            
-        //                                                 >
-        //                                                     Details
-        //                                                 </Button>
-        //                                             </TableCell> */}
-        //                                         </TableRow>
-        //                                     )
-        //                                 })
-        //                             }
-        //                         </TableBody>
-        //                     </Table>
-        //                 }
-        //             </TableContainer>
-
-        //             {/* <TablePagination
-        //                 rowsPerPageOptions={[]}
-        //                 component="div"
-        //                 count={totalElements}
-        //                 rowsPerPage={20}
-        //                 page={page}
-        //                 onPageChange={handleChangePage}
-        //             /> */}
-        //         </Paper>
-        //     </Container>
-        // </>

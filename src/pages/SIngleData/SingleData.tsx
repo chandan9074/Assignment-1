@@ -18,7 +18,7 @@ const SingleData : React.FunctionComponent = () =>{
     const { data } = state;
     const rawData = JSON.stringify(data);
     return (
-        <p className='singledt' data-testId="single-data">
+        <p className='singledt' data-testid="single-data">
             {rawData}
         </p>
     )
